@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const robots = `User-agent: *
 Allow: /
-Sitemap: ${process.env.SITE_URL || "https://www.cash-handyman-remodeling.com"}/sitemap.xml
+Sitemap: ${process.env.SITE_URL || "https://www.cashhandyman.com"}/sitemap.xml
 `;
 
 export async function GET() {

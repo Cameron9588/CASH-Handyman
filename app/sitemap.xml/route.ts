@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const siteUrl = process.env.SITE_URL || "https://www.cash-handyman-remodeling.com";
+const siteUrl = process.env.SITE_URL || "https://www.cashhandyman.com";
 const today = new Date().toISOString();
 
 const pages = [
