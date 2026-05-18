@@ -23,16 +23,34 @@ export async function POST(request: NextRequest) {
     // Configure your email service here
     // Using Gmail as an example (you'll need to set up an app password)
     // Or use any SMTP service of your choice
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      return NextResponse.json(
+        { error: 'Email credentials are not configured on the server.' },
+        { status: 500 }
+      );
+    }
+
+    const emailHost = process.env.EMAIL_HOST || 'smtp.gmail.com';
+    const emailPort = Number(process.env.EMAIL_PORT || 465);
+    const emailSecure = process.env.EMAIL_SECURE !== 'false';
+
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: emailHost,
+      port: emailPort,
+      secure: emailSecure,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
 
+    await transporter.verify();
+
     let attachments: any[] = [];
-    if (file) {
+    if (file instanceof File) {
       const buffer = await file.arrayBuffer();
       attachments.push({
         filename: file.name,
@@ -52,8 +70,8 @@ export async function POST(request: NextRequest) {
     `;
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: 'Cameron.sargent@yahoo.com',
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: process.env.EMAIL_TO || 'Cameron.sargent@yahoo.com',
       replyTo: email,
       subject: `New Service Request - ${serviceType}`,
       html: emailContent,
